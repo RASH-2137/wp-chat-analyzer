@@ -10,13 +10,12 @@ import os
 from helper import most_commonwords, montly_data, daily_data
 
 # Basic page setup - just making it look decent
-# CHANGED: Collapse sidebar by default to fix mobile overlap issue
+# CHANGED: Removed sidebar state config since we're not using sidebar anymore
 st.set_page_config(
     page_title="WhatsApp Chat Analyzer",
-    page_icon="💬",
-    layout="wide",
-    initial_sidebar_state="collapsed"  # Changed from "expanded" to prevent mobile overlap
+    layout="wide"
 )
+
 
 # Some custom CSS to make things look nicer
 st.markdown("""
@@ -99,11 +98,6 @@ st.markdown("""
         border: 1px solid var(--border-color);
     }
     
-    /* Sidebar improvements */
-    [data-testid="stSidebar"] {
-        background: var(--sidebar-background-color);
-    }
-    
     /* Better spacing */
     .stMarkdown {
         margin-bottom: 1rem;
@@ -116,14 +110,6 @@ st.markdown("""
         }
         .stat-value {
             font-size: 2rem;
-        }
-    }
-    
-    /* CHANGED: Ensure sidebar toggle button is easily accessible on mobile */
-    @media (max-width: 768px) {
-        [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
-            z-index: 999;
-            position: fixed;
         }
     }
     </style>
@@ -147,33 +133,15 @@ def get_image_path(filename):
         return relative_path
     return filename
 
-# Sidebar stuff
-with st.sidebar:
-    st.markdown("""
-        <div style='text-align: center; padding: 1rem 0;'>
-            <h1 style='font-size: 2rem; margin: 0;'>💬</h1>
-            <h2 style='font-size: 1.5rem; margin: 0.5rem 0;'>Chat Analyzer</h2>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    st.markdown("### 📤 Upload Chat")
-    st.caption("Upload your WhatsApp chat export (.txt or .zip)")
-    uploaded_file = st.file_uploader(
-        "Choose WhatsApp chat file",
-        type=["txt", "zip"],
-        label_visibility="collapsed",
-        help="Export your WhatsApp chat without media from WhatsApp settings"
-    )
-    
-    st.markdown("---")
-    
-    if uploaded_file is not None:
-        st.markdown("### 👤 Analysis Options")
-        st.info("📊 Processing your chat file...")
-
-# Main page content
+# CHANGED: File uploader moved from sidebar to main page for mobile-first UX
+# Main page content starts here
+st.markdown("### 📤 Upload WhatsApp Chat")
+st.caption("Upload your WhatsApp chat export (.txt or .zip)")
+uploaded_file = st.file_uploader(
+    "Choose WhatsApp chat file",
+    type=["txt", "zip"],
+    help="Export your WhatsApp chat without media from WhatsApp settings"
+)
 
 # Show welcome screen when no file is uploaded yet
 if uploaded_file is None:
@@ -214,7 +182,7 @@ if uploaded_file is None:
                 <li>Go to the chat you want to analyze</li>
                 <li>Tap the three dots → Export Chat</li>
                 <li>Select "Without Media" (makes the file smaller)</li>
-                <li>Upload the file using the sidebar on the left</li>
+                <li>Upload the file using the uploader above</li>
             </ol>
         </div>
     """, unsafe_allow_html=True)
@@ -257,23 +225,21 @@ if uploaded_file is not None:
     user_list.sort()
     user_list.insert(0, "Overall")
 
-    # Update sidebar with user selection
-    with st.sidebar:
-        st.markdown("---")
-        selected_user = st.selectbox(
-            "👤 Analyze for:",
-            user_list,
-            help="Select a user to analyze their individual stats, or 'Overall' for group analysis"
-        )
-        
-        st.markdown("---")
-        
-        analyze_button = st.button(
-            "🚀 Show Analysis",
-            type="primary",
-            use_container_width=True,
-            help="Click to generate comprehensive chat analysis"
-        )
+    # CHANGED: User selection and button moved from sidebar to main page
+    st.markdown("---")
+    st.markdown("### 👤 Analysis Options")
+    selected_user = st.selectbox(
+        "Analyze for:",
+        user_list,
+        help="Select a user to analyze their individual stats, or 'Overall' for group analysis"
+    )
+    
+    analyze_button = st.button(
+        "🚀 Show Analysis",
+        type="primary",
+        use_container_width=True,
+        help="Click to generate comprehensive chat analysis"
+    )
 
     # Show the analysis when button is clicked
     if analyze_button:
