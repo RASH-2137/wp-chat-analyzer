@@ -10,11 +10,12 @@ import os
 from helper import most_commonwords, montly_data, daily_data
 
 # Basic page setup - just making it look decent
+# CHANGED: Collapse sidebar by default to fix mobile overlap issue
 st.set_page_config(
     page_title="WhatsApp Chat Analyzer",
     page_icon="💬",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # Changed from "expanded" to prevent mobile overlap
 )
 
 # Some custom CSS to make things look nicer
@@ -115,6 +116,14 @@ st.markdown("""
         }
         .stat-value {
             font-size: 2rem;
+        }
+    }
+    
+    /* CHANGED: Ensure sidebar toggle button is easily accessible on mobile */
+    @media (max-width: 768px) {
+        [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
+            z-index: 999;
+            position: fixed;
         }
     }
     </style>
