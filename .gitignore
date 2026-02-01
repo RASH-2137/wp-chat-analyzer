@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# IDE
+.idea/
+
+# Node (not needed for this project)
+node_modules/
+package.json
+package-lock.json
+
+# OS
+.DS_Store
