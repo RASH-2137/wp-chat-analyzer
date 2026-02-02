@@ -315,6 +315,32 @@ if uploaded_file is not None:
                     use_container_width=True,
                     hide_index=True
                 )
+#sentiment analysis
+        st.title("😊 Sentiment Analysis")
+
+        sentiments = helper.sentiment_analysis(selected_user, df)
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Positive", sentiments["Positive"])
+        with col2:
+            st.metric("Neutral", sentiments["Neutral"])
+        with col3:
+            st.metric("Negative", sentiments["Negative"])
+
+
+#pie chart for sentiment analysis
+        fig, ax = plt.subplots()
+        ax.pie(
+            sentiments.values(),
+            labels=sentiments.keys(),
+            autopct="%1.1f%%",
+            startangle=90
+        )
+        st.pyplot(fig)
+
+
 
         # Word cloud visualization
         st.markdown("""

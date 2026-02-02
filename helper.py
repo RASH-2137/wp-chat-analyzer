@@ -4,7 +4,12 @@ from wordcloud import WordCloud
 from collections import Counter
 import pandas as pd
 import emoji
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
 
+nltk.download('vader_lexicon')
+
+sia = SentimentIntensityAnalyzer()
 
 extract = URLExtract()
 
@@ -151,3 +156,22 @@ def hourly_activity(selected_user,df):
     return activity_map
 
 
+def sentiment_analysis(selected_user, df):
+    if selected_user != "Overall":
+        df = df[df['user'] == selected_user]
+
+    temp = df[df['user'] != 'group_notification']
+    temp = temp[temp['message'] != '<Media omitted>\n']
+
+    sentiments = {"Positive": 0, "Negative": 0, "Neutral": 0}
+
+    for message in temp['message']:
+        score = sia.polarity_scores(message)['compound']
+        if score > 0.05:
+            sentiments["Positive"] += 1
+        elif score < -0.05:
+            sentiments["Negative"] += 1
+        else:
+            sentiments["Neutral"] += 1
+
+    return sentiments
